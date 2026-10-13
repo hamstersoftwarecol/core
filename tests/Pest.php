@@ -68,3 +68,12 @@ function userWithPermission(string $permission): User
 
     return $user;
 }
+
+function bootNotesProvider(): void
+{
+    // Simula el arranque del provider en el SIGUIENTE request (en producción,
+    // cada request vuelve a hacer boot de los providers con el cache actual).
+    $provider = new \AppCore\Notes\NotesServiceProvider(app());
+    $provider->register();
+    $provider->boot();
+}

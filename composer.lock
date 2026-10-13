@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3770fa85db78e058b3b5200754e2f981",
+    "content-hash": "ea23efdca2fc99ec5c03964bd0382e45",
     "packages": [
         {
             "name": "appcore/contracts",
@@ -62,6 +62,37 @@
                 }
             },
             "description": "Kernel del sistema de apps",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "appcore/notes",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "apps/notes",
+                "reference": "1cf6e94cf9304610612d17f5bfe530e31a316c59"
+            },
+            "require": {
+                "appcore/contracts": "^1.0",
+                "php": ">=8.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AppCore\\Notes\\NotesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AppCore\\Notes\\": "src/"
+                }
+            },
+            "description": "App de ejemplo: notas",
             "transport-options": {
                 "symlink": true,
                 "relative": true
