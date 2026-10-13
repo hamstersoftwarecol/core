@@ -16,6 +16,10 @@ class CoreServiceProvider extends ServiceProvider
             (string) $app['config']->get('plugin-core.cache_file')
         ));
         $this->app->alias(ActiveAppsCache::class, PluginState::class);
+
+        $this->app->singleton(PluginManager::class, fn ($app) => new PluginManager(
+            $app->make(ActiveAppsCache::class)
+        ));
     }
 
     public function boot(): void
