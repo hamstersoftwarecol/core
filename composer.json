@@ -21,6 +21,7 @@
         "php": "^8.2",
         "appcore/core": "^1.0",
         "appcore/notes": "^1.0",
+        "appcore/reportes": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.20",

@@ -9,7 +9,7 @@ use AppCore\Core\Models\ContentTypeRecord;
 
 /**
  * Fuente de verdad: tabla content_types (la siembra el PluginManager desde app.json
- * al activar). Lo registrado en runtime con contentType() completa/sobrescribe.
+ * al activar). Lo registrado en runtime con contentType() se fusiona encima.
  */
 class ContentTypeRegistry implements ContentTypeRegistryContract
 {
@@ -33,8 +33,16 @@ class ContentTypeRegistry implements ContentTypeRegistryContract
             ])
             ->all();
 
+        // runtime completa al registro de BD (label y claves de config), nunca lo borra
+        foreach ($this->runtime as $slug => $type) {
+            $stored = $types[$slug] ?? null;
+            $types[$slug] = $stored
+                ? new ContentType($slug, $stored->app, $type->label, array_merge($stored->config, $type->config))
+                : $type;
+        }
+
         return array_filter(
-            array_merge($types, $this->runtime),
+            $types,
             fn (ContentType $t) => $this->state->isActive($t->app),
         );
     }

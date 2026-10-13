@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea23efdca2fc99ec5c03964bd0382e45",
+    "content-hash": "1a4ccd94ca341b3bd38b8c13b065c8b0",
     "packages": [
         {
             "name": "appcore/contracts",
@@ -93,6 +93,37 @@
                 }
             },
             "description": "App de ejemplo: notas",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "appcore/reportes",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "apps/reportes",
+                "reference": "0c240e4611b2c6d34bdc31a81cc16e0669c8252c"
+            },
+            "require": {
+                "appcore/contracts": "^1.0",
+                "php": ">=8.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AppCore\\Reportes\\ReportesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AppCore\\Reportes\\": "src/"
+                }
+            },
+            "description": "App de reportes: consume los content_types de otras apps",
             "transport-options": {
                 "symlink": true,
                 "relative": true

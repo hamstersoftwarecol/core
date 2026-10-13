@@ -1,4 +1,4 @@
-# Sistema de apps del core (Fases 1 y 2)
+# Sistema de apps del core (Fases 1–3)
 
 ## Cómo crear una app
 
@@ -48,6 +48,18 @@ Campos nuevos de `app.json`:
 ```
 
 `config.*.type` ∈ `string|number|boolean`; los tipos de contenido deben empezar por `{slug}.`.
+
+## Interoperabilidad (Fase 3): `apps/reportes`
+
+`reportes` no importa nada de otras apps: lee `ContentTypeRegistry::all()` y cuenta
+registros de cada tipo que declare `"table"` en su definición de `content_types`
+(nombre validado como identificador SQL simple y existente; si no, muestra `—`).
+Al desactivar la app dueña, sus tipos desaparecen del reporte; al reactivarla vuelven
+con sus datos. Opción de config: `show_empty`.
+
+Convención para que tu tipo sea contable: `"content_types": { "blog.post": { "label": "Post", "table": "posts" } }`.
+Un `contentType()` en runtime se **fusiona** con lo del manifest (puede cambiar el label
+o añadir claves de config, nunca borra `table`).
 
 ## Ciclo de vida
 
