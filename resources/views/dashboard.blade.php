@@ -12,6 +12,10 @@
                     {{ __("You're logged in!") }}
                 </div>
             </div>
+
+            <div class="mt-6">
+                <x-core-dashboard-widgets />
+            </div>
         </div>
     </div>
 </x-app-layout>

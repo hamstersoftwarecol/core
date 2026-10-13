@@ -33,9 +33,16 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-core-app-menu />
                     @role('super-admin')
                         <x-nav-link :href="route('admin.apps.index')" :active="request()->routeIs('admin.apps.index')" wire:navigate>
                             {{ __('Apps') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')" wire:navigate>
+                            {{ __('Usuarios') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.index')" wire:navigate>
+                            {{ __('Roles') }}
                         </x-nav-link>
                     @endrole
                 </div>
@@ -89,9 +96,16 @@ new class extends Component
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-core-app-menu :responsive="true" />
             @role('super-admin')
                 <x-responsive-nav-link :href="route('admin.apps.index')" :active="request()->routeIs('admin.apps.index')" wire:navigate>
                     {{ __('Apps') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')" wire:navigate>
+                    {{ __('Usuarios') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.index')" wire:navigate>
+                    {{ __('Roles') }}
                 </x-responsive-nav-link>
             @endrole
         </div>

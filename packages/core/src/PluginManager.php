@@ -6,6 +6,7 @@ use AppCore\Contracts\Exceptions\InvalidManifest;
 use AppCore\Contracts\Manifest;
 use AppCore\Core\Exceptions\ActivationFailed;
 use AppCore\Core\Exceptions\AppNotFound;
+use AppCore\Core\Models\ContentTypeRecord;
 use AppCore\Core\Models\PluginApp;
 use AppCore\Core\Support\ActiveAppsCache;
 use Composer\Semver\Semver;
@@ -94,6 +95,17 @@ class PluginManager
                 Permission::findOrCreate($permission, 'web');
             }
             app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+            foreach ($manifest->contentTypes() as $type => $definition) {
+                ContentTypeRecord::updateOrCreate(
+                    ['slug' => $type],
+                    [
+                        'app_slug' => $slug,
+                        'label' => (string) ($definition['label'] ?? $type),
+                        'config' => array_diff_key($definition, ['label' => true]),
+                    ]
+                );
+            }
         } catch (\Throwable $e) {
             $row->forceFill([
                 'status' => PluginApp::STATUS_ERROR,
@@ -143,9 +155,64 @@ class PluginManager
             '--force' => true,
         ]);
 
+        ContentTypeRecord::where('app_slug', $slug)->delete();
+
         $row->delete(); // slug, config, last_error y activated_at mueren con la fila
 
         $this->cache->rebuild();
+    }
+
+    /**
+     * Valida y guarda la configuración contra el schema `config` del manifest.
+     *
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed> valores normalizados guardados
+     */
+    public function saveConfig(string $slug, array $values): array
+    {
+        $manifest = $this->manifestFor($slug);
+        $row = PluginApp::where('slug', $slug)->firstOrFail();
+        $clean = [];
+
+        foreach ($manifest->configSchema() as $key => $field) {
+            $value = $values[$key] ?? $field['default'] ?? null;
+            $clean[$key] = match ($field['type']) {
+                'number' => is_numeric($value) ? $value + 0 : throw new \InvalidArgumentException("\"{$key}\" debe ser numérico"),
+                'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+                default => $value === null ? null : (string) $value,
+            };
+        }
+
+        $row->forceFill(['config' => $clean])->save();
+        app(Support\DatabasePluginConfig::class)->forget($slug);
+
+        return $clean;
+    }
+
+    /**
+     * Revalida manifests de apps activas: las que ya no cumplen pasan a `error`.
+     * Reconstruye active-apps.php. Pensado para correr tras cada deploy.
+     *
+     * @return array<string, ?string> slug => error (null si OK)
+     */
+    public function verify(): array
+    {
+        $this->sync();
+        $report = [];
+
+        foreach (PluginApp::where('status', PluginApp::STATUS_ACTIVE)->orderBy('slug')->get() as $row) {
+            try {
+                $this->assertRequirements($this->manifestFor($row->slug));
+                $report[$row->slug] = null;
+            } catch (\Throwable $e) {
+                $row->forceFill(['status' => PluginApp::STATUS_ERROR, 'last_error' => $e->getMessage()])->save();
+                $report[$row->slug] = $e->getMessage();
+            }
+        }
+
+        $this->cache->rebuild();
+
+        return $report;
     }
 
     /** @return array<int, array{slug: string, name: string, version: string, status: string, last_error: ?string}> */

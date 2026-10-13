@@ -30,7 +30,7 @@ test('el listado muestra slug, version y estado por fila', function () {
 
     $notes = $rows->firstWhere('slug', 'notes');
     expect($notes)->not->toBeNull()
-        ->and($notes['version'])->toBe('1.0.0')
+        ->and($notes['version'])->toBe('1.1.0')
         ->and($notes['status'])->toBe(PluginApp::STATUS_INACTIVE);
 });
 

@@ -6,6 +6,8 @@ use AppCore\Contracts\Exceptions\InvalidManifest;
 
 final class Manifest
 {
+    public const array CONFIG_TYPES = ['string', 'number', 'boolean'];
+
     private function __construct(
         private readonly array $data,
         private readonly string $sourceDir,
@@ -46,6 +48,22 @@ final class Manifest
             if (! is_string($permission) || ! str_starts_with($permission, $data['slug'].'.')) {
                 throw new InvalidManifest(
                     "app.json: el permiso '{$permission}' debe empezar por '{$data['slug']}.'"
+                );
+            }
+        }
+
+        foreach ($data['content_types'] ?? [] as $type => $definition) {
+            if (! is_string($type) || ! str_starts_with($type, $data['slug'].'.') || ! is_array($definition)) {
+                throw new InvalidManifest(
+                    "app.json: el tipo de contenido '{$type}' debe empezar por '{$data['slug']}.' y ser un objeto"
+                );
+            }
+        }
+
+        foreach ($data['config'] ?? [] as $key => $field) {
+            if (! is_array($field) || ! in_array($field['type'] ?? null, self::CONFIG_TYPES, true)) {
+                throw new InvalidManifest(
+                    "app.json: config '{$key}' debe tener type ".implode('|', self::CONFIG_TYPES)
                 );
             }
         }
@@ -99,6 +117,18 @@ final class Manifest
     public function configSchema(): array
     {
         return $this->data['config'] ?? [];
+    }
+
+    /** @return array<string, array<string, mixed>> slug del tipo => definición (label, ...) */
+    public function contentTypes(): array
+    {
+        return $this->data['content_types'] ?? [];
+    }
+
+    /** @return array<string, mixed> clave => default */
+    public function configDefaults(): array
+    {
+        return array_map(fn (array $field) => $field['default'] ?? null, $this->configSchema());
     }
 
     public function seeder(): ?string

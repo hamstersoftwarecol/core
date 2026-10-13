@@ -54,6 +54,11 @@
                                     </button>
                                 @endif
 
+                                <a href="{{ route('admin.apps.config', $app['slug']) }}" wire:navigate
+                                    class="rounded bg-gray-100 px-3 py-1 text-xs hover:bg-gray-200">
+                                    Configurar
+                                </a>
+
                                 <button wire:click="confirmUninstall('{{ $app['slug'] }}')"
                                     class="rounded bg-red-100 px-3 py-1 text-xs text-red-700 hover:bg-red-200">
                                     Desinstalar
