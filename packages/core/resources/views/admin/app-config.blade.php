@@ -1,13 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Configurar') }} {{ $slug }}
-        </h2>
+        <x-page-header :title="'Configurar '.$slug" description="Opciones declaradas en el app.json de la app." />
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <livewire:admin.app-config :slug="$slug" />
-        </div>
+    <div class="max-w-2xl">
+        <livewire:admin.app-config :slug="$slug" />
     </div>
 </x-app-layout>

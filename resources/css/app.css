@@ -8,3 +8,12 @@
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views";
 @source "../../storage/framework/views";
 @source "../../resources/views";
+
+@theme {
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+    html { -webkit-font-smoothing: antialiased; }
+    [x-cloak] { display: none !important; }
+}

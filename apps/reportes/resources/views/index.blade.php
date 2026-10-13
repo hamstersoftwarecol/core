@@ -1,32 +1,28 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Reportes</h2>
+        <x-page-header title="Reportes" description="Registros por tipo de contenido de las apps activas." />
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50">
+        <div class="overflow-x-auto rounded-2xl bg-white shadow-xs ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-white/10">
+            <table class="min-w-full divide-y divide-zinc-200 dark:divide-white/10 text-sm">
+                <thead class="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 dark:bg-white/5 dark:text-zinc-400">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-medium">Tipo</th>
+                        <th class="px-4 py-3 text-left font-medium">App</th>
+                        <th class="px-4 py-3 text-right font-medium">Registros</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-100 dark:divide-white/5">
+                    @forelse ($rows as $row)
                         <tr>
-                            <th class="px-4 py-2 text-left font-medium">Tipo</th>
-                            <th class="px-4 py-2 text-left font-medium">App</th>
-                            <th class="px-4 py-2 text-right font-medium">Registros</th>
+                            <td class="px-4 py-3">{{ $row['label'] }} <span class="text-xs text-zinc-500">{{ $row['slug'] }}</span></td>
+                            <td class="px-4 py-3">{{ $row['app'] }}</td>
+                            <td class="px-4 py-3 text-right">{{ $row['count'] ?? '—' }}</td>
                         </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        @forelse ($rows as $row)
-                            <tr>
-                                <td class="px-4 py-2">{{ $row['label'] }} <span class="text-xs text-gray-500">{{ $row['slug'] }}</span></td>
-                                <td class="px-4 py-2">{{ $row['app'] }}</td>
-                                <td class="px-4 py-2 text-right">{{ $row['count'] ?? '—' }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Ninguna app activa publica tipos de contenido.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr><td colspan="3" class="px-4 py-6 text-center text-zinc-500">Ninguna app activa publica tipos de contenido.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </div>
 </x-app-layout>

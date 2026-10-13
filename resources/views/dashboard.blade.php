@@ -1,21 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
+        <x-page-header :title="'Hola, '.str(auth()->user()->name)->before(' ')" description="Este es el resumen de tus apps activas." />
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
+    <x-core-dashboard-widgets />
 
-            <div class="mt-6">
-                <x-core-dashboard-widgets />
+    @role('super-admin')
+        <div class="mt-8 rounded-2xl border border-dashed border-zinc-300 p-6 dark:border-white/15">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="flex size-10 items-center justify-center rounded-lg bg-indigo-600/10 text-indigo-600 dark:text-indigo-400">
+                        <flux:icon.puzzle-piece class="size-5" />
+                    </div>
+                    <div>
+                        <div class="font-medium">Gestiona tus apps</div>
+                        <div class="text-sm text-zinc-500">Activa módulos nuevos o configura los existentes.</div>
+                    </div>
+                </div>
+                <a href="{{ route('admin.apps.index') }}" wire:navigate class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900">Ir a Apps</a>
             </div>
         </div>
-    </div>
+    @endrole
 </x-app-layout>

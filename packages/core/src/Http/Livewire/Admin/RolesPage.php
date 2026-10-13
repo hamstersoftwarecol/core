@@ -11,14 +11,12 @@ class RolesPage extends Component
 {
     public string $newRole = '';
 
-    public ?string $flash = null;
-
     public function create(): void
     {
         $this->validate(['newRole' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9-]+$/', 'unique:roles,name']]);
         Role::create(['name' => $this->newRole, 'guard_name' => 'web']);
         $this->newRole = '';
-        $this->flash = 'Rol creado.';
+        $this->dispatch('toast', type: 'success', message: 'Rol creado.');
     }
 
     public function toggle(int $roleId, int $permissionId): void
@@ -39,7 +37,7 @@ class RolesPage extends Component
         $role = Role::findOrFail($roleId);
         abort_if($role->name === 'super-admin', 422);
         $role->delete();
-        $this->flash = 'Rol eliminado.';
+        $this->dispatch('toast', type: 'success', message: 'Rol eliminado.');
     }
 
     public function render()

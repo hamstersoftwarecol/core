@@ -11,7 +11,7 @@ class AppMenu extends Component
     /** @var array<int, MenuItem> */
     public array $items;
 
-    public function __construct(MenuRegistry $menu, public bool $responsive = false)
+    public function __construct(MenuRegistry $menu)
     {
         $this->items = $menu->forUser(auth()->user());
     }

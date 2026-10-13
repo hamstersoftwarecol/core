@@ -1,17 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Notas</h2>
+        <x-page-header title="Notas" description="Las notas más recientes." />
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <ul class="divide-y rounded-lg bg-white shadow-sm">
-                @forelse ($notes as $note)
-                    <li class="p-4"><strong>{{ $note->title }}</strong></li>
-                @empty
-                    <li class="p-4 text-gray-500">Aún no hay notas.</li>
-                @endforelse
-            </ul>
-        </div>
-    </div>
+        <ul class="divide-y divide-zinc-100 rounded-2xl bg-white shadow-xs ring-1 ring-zinc-200 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/10">
+            @forelse ($notes as $note)
+                <li class="p-4"><strong>{{ $note->title }}</strong></li>
+            @empty
+                <li class="p-4 text-zinc-500">Aún no hay notas.</li>
+            @endforelse
+        </ul>
 </x-app-layout>

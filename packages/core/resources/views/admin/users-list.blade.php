@@ -1,27 +1,23 @@
 <div class="space-y-4">
-    @if ($flash)
-        <div class="rounded bg-green-100 px-4 py-3 text-sm text-green-800">{{ $flash }}</div>
-    @endif
-
     <input type="search" wire:model.live.debounce.300ms="search" placeholder="Buscar por nombre o email"
-        class="w-full max-w-sm rounded border-gray-300 text-sm">
+        class="w-full max-w-sm rounded-lg border-zinc-300 dark:border-white/10 dark:bg-white/5 text-sm">
 
-    <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
+    <div class="overflow-x-auto rounded-2xl bg-white shadow-xs ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-white/10">
+        <table class="min-w-full divide-y divide-zinc-200 dark:divide-white/10 text-sm">
+            <thead class="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 dark:bg-white/5 dark:text-zinc-400">
                 <tr>
-                    <th class="px-4 py-2 text-left font-medium">Usuario</th>
-                    <th class="px-4 py-2 text-left font-medium">Roles</th>
+                    <th class="px-4 py-3 text-left font-medium">Usuario</th>
+                    <th class="px-4 py-3 text-left font-medium">Roles</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody class="divide-y divide-zinc-100 dark:divide-white/5">
                 @foreach ($users as $user)
                     <tr>
-                        <td class="px-4 py-2">
+                        <td class="px-4 py-3">
                             <div class="font-medium">{{ $user->name }}</div>
-                            <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                            <div class="text-xs text-zinc-500">{{ $user->email }}</div>
                         </td>
-                        <td class="px-4 py-2">
+                        <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-3">
                                 @foreach ($roles as $role)
                                     <label class="flex items-center gap-1 text-xs">

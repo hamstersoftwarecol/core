@@ -36,23 +36,19 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+    <x-auth-header title="Verifica tu email" description="Te enviamos un enlace de verificación. Ábrelo para activar tu cuenta; si no llegó, te enviamos otro." />
 
     @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-        </div>
+        <x-auth-session-status class="mb-6" :status="__('A new verification link has been sent to the email address you provided during registration.')" />
     @endif
 
-    <div class="mt-4 flex items-center justify-between">
-        <x-primary-button wire:click="sendVerification">
+    <div class="space-y-4">
+        <x-primary-button class="w-full" type="button" wire:click="sendVerification" wire:loading.attr="disabled">
             {{ __('Resend Verification Email') }}
         </x-primary-button>
 
-        <button wire:click="logout" type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <x-secondary-button class="w-full" wire:click="logout">
             {{ __('Log Out') }}
-        </button>
+        </x-secondary-button>
     </div>
 </div>

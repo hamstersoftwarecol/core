@@ -13,8 +13,6 @@ class UsersPage extends Component
 
     public string $search = '';
 
-    public ?string $flash = null;
-
     public function toggleRole(int $userId, string $role): void
     {
         $model = Auth::getProvider()->getModel();
@@ -25,7 +23,7 @@ class UsersPage extends Component
         abort_if($role === 'super-admin' && $user->is(Auth::user()), 422);
 
         $user->hasRole($role) ? $user->removeRole($role) : $user->assignRole($role);
-        $this->flash = 'Roles actualizados.';
+        $this->dispatch('toast', type: 'success', message: 'Roles actualizados.');
     }
 
     public function render()

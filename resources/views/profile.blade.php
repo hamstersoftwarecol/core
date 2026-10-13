@@ -1,29 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <x-page-header title="Perfil" description="Tu información, contraseña y cuenta." />
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+    <div class="space-y-6">
+        @foreach (['profile.update-profile-information-form', 'profile.update-password-form', 'profile.delete-user-form'] as $form)
+            <div class="rounded-2xl bg-white p-6 shadow-xs ring-1 ring-zinc-200 sm:p-8 dark:bg-zinc-900 dark:ring-white/10">
                 <div class="max-w-xl">
-                    <livewire:profile.update-profile-information-form />
+                    @livewire($form)
                 </div>
             </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.update-password-form />
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.delete-user-form />
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 </x-app-layout>
