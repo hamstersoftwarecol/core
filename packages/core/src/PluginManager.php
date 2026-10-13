@@ -11,7 +11,7 @@ use AppCore\Core\Support\ActiveAppsCache;
 use Composer\Semver\Semver;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Permission;
+use Spatie\Permission\Models\Permission;
 
 class PluginManager
 {
