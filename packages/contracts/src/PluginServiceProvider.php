@@ -32,6 +32,7 @@ abstract class PluginServiceProvider extends ServiceProvider
         $file = $this->packagePath($relativeFile);
         if (! is_file($file)) {
             report(new \RuntimeException("routes(): no existe {$file}"));
+
             return;
         }
 

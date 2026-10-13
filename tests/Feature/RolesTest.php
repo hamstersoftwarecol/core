@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
+use Database\Seeders\RolesSeeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 test('el seeder crea los tres roles base', function () {
-    $this->seed(\Database\Seeders\RolesSeeder::class);
+    $this->seed(RolesSeeder::class);
 
     expect(Role::pluck('name')->all())->toEqualCanonicalizing(['super-admin', 'editor', 'usuario']);
 });

@@ -29,7 +29,7 @@ class AppsPage extends Component
         try {
             app(PluginManager::class)->activate($slug);
             $this->setFlash('success', "App \"{$slug}\" activada.");
-        } catch (ActivationFailed | AppNotFound $e) {
+        } catch (ActivationFailed|AppNotFound $e) {
             $this->setFlash('error', $e->getMessage());
         }
 
@@ -64,13 +64,14 @@ class AppsPage extends Component
     {
         if ($slug !== $this->confirmSlug) {
             $this->setFlash('error', 'Confirmación requerida para desinstalar.');
+
             return;
         }
 
         try {
             app(PluginManager::class)->uninstall($slug);
             $this->setFlash('success', "App \"{$slug}\" desinstalada.");
-        } catch (ActivationFailed | AppNotFound $e) {
+        } catch (ActivationFailed|AppNotFound $e) {
             $this->setFlash('error', $e->getMessage());
         }
 

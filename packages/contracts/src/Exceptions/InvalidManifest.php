@@ -4,6 +4,4 @@ namespace AppCore\Contracts\Exceptions;
 
 use InvalidArgumentException;
 
-class InvalidManifest extends InvalidArgumentException
-{
-}
+class InvalidManifest extends InvalidArgumentException {}

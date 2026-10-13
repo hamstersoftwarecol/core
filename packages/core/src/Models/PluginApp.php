@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class PluginApp extends Model
 {
     public const string STATUS_ACTIVE = 'active';
+
     public const string STATUS_INACTIVE = 'inactive';
+
     public const string STATUS_ERROR = 'error';
 
     protected $table = 'apps';

@@ -12,13 +12,13 @@ use Composer\Semver\Semver;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class PluginManager
 {
     public function __construct(
         private readonly ActiveAppsCache $cache,
-    ) {
-    }
+    ) {}
 
     /** @return Collection<string, Manifest> */
     public function discover(): Collection
@@ -35,6 +35,7 @@ class PluginManager
                 $manifest = Manifest::fromFile($file);
             } catch (InvalidManifest $e) {
                 report($e); // manifest roto: no rompe el listado; se ignora
+
                 continue;
             }
             $found->put($manifest->slug(), $manifest);
@@ -92,7 +93,7 @@ class PluginManager
             foreach ($manifest->permissions() as $permission) {
                 Permission::findOrCreate($permission, 'web');
             }
-            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
         } catch (\Throwable $e) {
             $row->forceFill([
                 'status' => PluginApp::STATUS_ERROR,
@@ -120,7 +121,7 @@ class PluginManager
         foreach ($manifest->permissions() as $permission) {
             Permission::where('name', $permission)->where('guard_name', 'web')->delete();
         }
-        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $row->forceFill(['status' => PluginApp::STATUS_INACTIVE])->save();
 

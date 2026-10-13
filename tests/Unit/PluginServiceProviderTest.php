@@ -1,5 +1,6 @@
 <?php
 
+use AppCore\Contracts\PluginServiceProvider;
 use AppCore\Core\PluginManager;
 use AppCore\Notes\NotesServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +30,8 @@ test('provider de una app activa registra ruta con prefijo, nombre y middleware'
 });
 
 test('un bootPlugin que revienta no propaga la excepcion', function () {
-    $provider = new class($this->app) extends \AppCore\Contracts\PluginServiceProvider {
+    $provider = new class($this->app) extends PluginServiceProvider
+    {
         protected function slug(): string
         {
             return 'no-existe';
@@ -37,7 +39,7 @@ test('un bootPlugin que revienta no propaga la excepcion', function () {
 
         protected function bootPlugin(): void
         {
-            throw new \RuntimeException('fallo deliberado');
+            throw new RuntimeException('fallo deliberado');
         }
     };
 

@@ -12,8 +12,7 @@ class ActiveAppsCache implements PluginState
 {
     public function __construct(
         private readonly string $cacheFile,
-    ) {
-    }
+    ) {}
 
     public function isActive(string $slug): bool
     {

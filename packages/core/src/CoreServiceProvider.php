@@ -3,8 +3,11 @@
 namespace AppCore\Core;
 
 use AppCore\Contracts\PluginState;
+use AppCore\Core\Http\Livewire\Admin\AppsPage;
 use AppCore\Core\Support\ActiveAppsCache;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -24,7 +27,7 @@ class CoreServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        \Illuminate\Support\Facades\Gate::before(
+        Gate::before(
             fn ($user, $ability) => $user->hasRole('super-admin') ? true : null
         );
 
@@ -34,8 +37,8 @@ class CoreServiceProvider extends ServiceProvider
 
         $this->loadRoutesFrom(__DIR__.'/../routes/admin.php');
 
-        if (class_exists(\Livewire\Livewire::class)) {
-            \Livewire\Livewire::component('admin.apps', \AppCore\Core\Http\Livewire\Admin\AppsPage::class);
+        if (class_exists(Livewire::class)) {
+            Livewire::component('admin.apps', AppsPage::class);
         }
 
         if ($this->app->runningInConsole()) {

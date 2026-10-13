@@ -11,8 +11,7 @@ class AppAccess
 {
     public function __construct(
         private readonly PluginState $state,
-    ) {
-    }
+    ) {}
 
     public function handle(Request $request, Closure $next, string $slug): Response
     {

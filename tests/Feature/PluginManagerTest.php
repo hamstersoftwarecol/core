@@ -85,7 +85,7 @@ test('no activa si una app requerida no esta activa', function () {
     use_fixture_apps_path();
 
     app(PluginManager::class)->activate('sample-req-app');
-})->throws(ActivationFailed::class, "Requiere la app \"sample\" activa");
+})->throws(ActivationFailed::class, 'Requiere la app "sample" activa');
 
 test('los requisitos fallidos no cambian el estado', function () {
     use_fixture_apps_path();

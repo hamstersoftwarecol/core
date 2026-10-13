@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use AppCore\Notes\NotesServiceProvider;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -73,7 +74,7 @@ function bootNotesProvider(): void
 {
     // Simula el arranque del provider en el SIGUIENTE request (en producción,
     // cada request vuelve a hacer boot de los providers con el cache actual).
-    $provider = new \AppCore\Notes\NotesServiceProvider(app());
+    $provider = new NotesServiceProvider(app());
     $provider->register();
     $provider->boot();
 }

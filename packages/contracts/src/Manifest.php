@@ -9,8 +9,7 @@ final class Manifest
     private function __construct(
         private readonly array $data,
         private readonly string $sourceDir,
-    ) {
-    }
+    ) {}
 
     public static function fromFile(string $file): self
     {

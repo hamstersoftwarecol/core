@@ -4,6 +4,4 @@ namespace AppCore\Core\Exceptions;
 
 use RuntimeException;
 
-class AppNotFound extends RuntimeException
-{
-}
+class AppNotFound extends RuntimeException {}
