@@ -1,0 +1,23 @@
+{
+    "name": "appcore/core",
+    "description": "Kernel del sistema de apps",
+    "type": "library",
+    "version": "1.0.0",
+    "require": {
+        "php": ">=8.3",
+        "appcore/contracts": "^1.0",
+        "illuminate/support": "^12.0",
+        "illuminate/routing": "^12.0",
+        "illuminate/http": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "AppCore\\Core\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": ["AppCore\\Core\\CoreServiceProvider"]
+        }
+    }
+}

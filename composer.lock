@@ -4,8 +4,67 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d15f2265cc525c923e22e3692cd02d47",
+    "content-hash": "3770fa85db78e058b3b5200754e2f981",
     "packages": [
+        {
+            "name": "appcore/contracts",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/contracts",
+                "reference": "092447145b9b9f7f44cb9f6db279aedab0e4e5dd"
+            },
+            "require": {
+                "illuminate/routing": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": ">=8.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AppCore\\Contracts\\": "src/"
+                }
+            },
+            "description": "Contrato del sistema de apps del core",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "appcore/core",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/core",
+                "reference": "fb4d8a288972f1042824cdf0c0af9bc64f358d01"
+            },
+            "require": {
+                "appcore/contracts": "^1.0",
+                "illuminate/http": "^12.0",
+                "illuminate/routing": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": ">=8.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AppCore\\Core\\CoreServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AppCore\\Core\\": "src/"
+                }
+            },
+            "description": "Kernel del sistema de apps",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
         {
             "name": "brick/math",
             "version": "0.14.8",
