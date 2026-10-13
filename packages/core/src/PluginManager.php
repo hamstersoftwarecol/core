@@ -112,6 +112,41 @@ class PluginManager
         $this->cache->rebuild();
     }
 
+    public function deactivate(string $slug): void
+    {
+        $manifest = $this->manifestFor($slug);
+        $row = PluginApp::where('slug', $slug)->firstOrFail();
+
+        foreach ($manifest->permissions() as $permission) {
+            Permission::where('name', $permission)->where('guard_name', 'web')->delete();
+        }
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $row->forceFill(['status' => PluginApp::STATUS_INACTIVE])->save();
+
+        $this->cache->rebuild();
+    }
+
+    public function uninstall(string $slug): void
+    {
+        $manifest = $this->manifestFor($slug);
+        $row = PluginApp::where('slug', $slug)->firstOrFail();
+
+        if ($row->status === PluginApp::STATUS_ACTIVE) {
+            $this->deactivate($slug);
+        }
+
+        Artisan::call('migrate:rollback', [
+            '--path' => $this->baseRelative($manifest->migrationsPath(), $slug),
+            '--step' => 1000, // batches recientes filtrados por --path: solo caen migraciones de ESTA app
+            '--force' => true,
+        ]);
+
+        $row->delete(); // slug, config, last_error y activated_at mueren con la fila
+
+        $this->cache->rebuild();
+    }
+
     private function assertRequirements(Manifest $manifest): void
     {
         if ($c = $manifest->phpConstraint()) {

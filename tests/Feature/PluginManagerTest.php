@@ -128,3 +128,60 @@ test('reintentar la activacion es posible y vuelve a fallar limpiamente', functi
 
     expect(PluginApp::where('slug', 'sample-broken')->value('status'))->toBe(PluginApp::STATUS_ERROR);
 });
+
+test('desactivar oculta la app y conserva los datos', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+    $manager->activate('sample');
+    DB::table('sample_items')->insert(['name' => 'registro vivo', 'created_at' => now(), 'updated_at' => now()]);
+
+    $manager->deactivate('sample');
+
+    expect(Schema::hasTable('sample_items'))->toBeTrue()
+        ->and(DB::table('sample_items')->count())->toBe(1)
+        ->and(PluginApp::where('slug', 'sample')->value('status'))->toBe(PluginApp::STATUS_INACTIVE)
+        ->and(app(ActiveAppsCache::class)->isActive('sample'))->toBeFalse()
+        ->and(Permission::where('name', 'sample.access')->exists())->toBeFalse();
+});
+
+test('desactivar una app no instalada lanza AppNotFound', function () {
+    use_fixture_apps_path();
+
+    app(PluginManager::class)->deactivate('no-existe');
+})->throws(AppNotFound::class);
+
+test('reactivar despues de desactivar restaura permisos', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+
+    $manager->activate('sample');
+    $manager->deactivate('sample');
+    $manager->activate('sample');
+
+    expect(Permission::where('name', 'sample.access')->exists())->toBeTrue()
+        ->and(app(ActiveAppsCache::class)->isActive('sample'))->toBeTrue();
+});
+
+test('desinstalar revierte migraciones, borra la fila y limpia el cache', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+    $manager->activate('sample');
+
+    $manager->uninstall('sample');
+
+    expect(Schema::hasTable('sample_items'))->toBeFalse()
+        ->and(PluginApp::where('slug', 'sample')->exists())->toBeFalse()
+        ->and(app(ActiveAppsCache::class)->isActive('sample'))->toBeFalse()
+        ->and(Permission::where('name', 'sample.access')->exists())->toBeFalse();
+});
+
+test('desinstalar una app activa primero la desactiva', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+    $manager->activate('sample');
+
+    $manager->uninstall('sample');
+
+    expect(Schema::hasTable('sample_items'))->toBeFalse()
+        ->and(PluginApp::where('slug', 'sample')->exists())->toBeFalse();
+});
