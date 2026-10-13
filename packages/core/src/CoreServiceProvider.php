@@ -20,6 +20,10 @@ class CoreServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \Illuminate\Support\Facades\Gate::before(
+            fn ($user, $ability) => $user->hasRole('super-admin') ? true : null
+        );
+
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         if ($this->app->runningInConsole()) {

@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\User;
+use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 /*
@@ -44,7 +47,24 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function adminUser(): User
 {
-    // ..
+    (new RolesSeeder)->run();
+    $user = User::factory()->create();
+    $user->assignRole('super-admin');
+
+    return $user;
+}
+
+function plainUser(): User
+{
+    return User::factory()->create();
+}
+
+function userWithPermission(string $permission): User
+{
+    $user = User::factory()->create();
+    $user->givePermissionTo(Permission::findOrCreate($permission, 'web'));
+
+    return $user;
 }
