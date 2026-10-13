@@ -1,9 +1,14 @@
 <?php
 
 use AppCore\Contracts\Manifest;
+use AppCore\Core\Exceptions\ActivationFailed;
 use AppCore\Core\Exceptions\AppNotFound;
 use AppCore\Core\Models\PluginApp;
 use AppCore\Core\PluginManager;
+use AppCore\Core\Support\ActiveAppsCache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\Models\Permission;
 
 function use_fixture_apps_path(): void
 {
@@ -50,3 +55,48 @@ test('manifestFor rechaza slugs con intento de path traversal', function () {
 
     app(PluginManager::class)->manifestFor('../../.env');
 })->throws(AppNotFound::class);
+
+test('activar ejecuta migraciones, crea permisos, marca activa y actualiza el cache', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+
+    $manager->activate('sample');
+
+    expect(Schema::hasTable('sample_items'))->toBeTrue()
+        ->and(Permission::where('name', 'sample.access')->exists())->toBeTrue();
+
+    $row = PluginApp::where('slug', 'sample')->first();
+    expect($row->status)->toBe(PluginApp::STATUS_ACTIVE)
+        ->and($row->activated_at)->not->toBeNull()
+        ->and($row->last_error)->toBeNull();
+
+    $cache = app(ActiveAppsCache::class);
+    expect($cache->isActive('sample'))->toBeTrue()
+        ->and($cache->accessPermissionFor('sample'))->toBe('sample.access');
+});
+
+test('no activa si la version de Laravel no cumple el requisito', function () {
+    use_fixture_apps_path();
+
+    app(PluginManager::class)->activate('sample-req-laravel');
+})->throws(ActivationFailed::class, 'Requiere Laravel ^99.0');
+
+test('no activa si una app requerida no esta activa', function () {
+    use_fixture_apps_path();
+
+    app(PluginManager::class)->activate('sample-req-app');
+})->throws(ActivationFailed::class, "Requiere la app \"sample\" activa");
+
+test('los requisitos fallidos no cambian el estado', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+
+    try {
+        $manager->activate('sample-req-app');
+    } catch (ActivationFailed) {
+    }
+
+    $row = PluginApp::where('slug', 'sample-req-app')->first();
+    expect($row->status)->toBe(PluginApp::STATUS_INACTIVE)
+        ->and(app(ActiveAppsCache::class)->isActive('sample-req-app'))->toBeFalse();
+});
