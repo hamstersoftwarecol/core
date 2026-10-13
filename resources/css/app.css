@@ -8,6 +8,9 @@
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views";
 @source "../../storage/framework/views";
 @source "../../resources/views";
+@source "../../packages/*/resources/views";
+@source "../../apps/*/resources/views";
+@source "../../apps/*/src";
 
 @theme {
     --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
