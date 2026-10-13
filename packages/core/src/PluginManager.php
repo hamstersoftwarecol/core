@@ -48,10 +48,12 @@ class PluginManager
     public function sync(): void
     {
         foreach ($this->discover() as $manifest) {
-            PluginApp::updateOrCreate(
+            // `version` en BD = versión INSTALADA (la fija activate); no se pisa aquí
+            // para que apps:verify detecte actualizaciones pendientes.
+            PluginApp::firstOrCreate(
                 ['slug' => $manifest->slug()],
                 ['name' => $manifest->name(), 'version' => $manifest->version()]
-            );
+            )->forceFill(['name' => $manifest->name()])->save();
         }
     }
 
@@ -118,7 +120,7 @@ class PluginManager
 
         $row->forceFill([
             'status' => PluginApp::STATUS_ACTIVE,
-            'activated_at' => now(),
+            'activated_at' => $row->status === PluginApp::STATUS_ACTIVE && $row->activated_at ? $row->activated_at : now(),
             'last_error' => null,
         ])->save();
 
@@ -190,7 +192,8 @@ class PluginManager
     }
 
     /**
-     * Revalida manifests de apps activas: las que ya no cumplen pasan a `error`.
+     * Re-aplica activate() a cada app activa (migraciones nuevas, permisos, tipos);
+     * las que ya no cumplen pasan a `error`.
      * Reconstruye active-apps.php. Pensado para correr tras cada deploy.
      *
      * @return array<string, ?string> slug => error (null si OK)
@@ -202,10 +205,12 @@ class PluginManager
 
         foreach (PluginApp::where('status', PluginApp::STATUS_ACTIVE)->orderBy('slug')->get() as $row) {
             try {
-                $this->assertRequirements($this->manifestFor($row->slug));
+                // activate() es idempotente: corre migraciones pendientes (app actualizada
+                // en el deploy), re-siembra permisos/tipos y fija la versión instalada.
+                $this->activate($row->slug);
                 $report[$row->slug] = null;
             } catch (\Throwable $e) {
-                $row->forceFill(['status' => PluginApp::STATUS_ERROR, 'last_error' => $e->getMessage()])->save();
+                $row->refresh()->forceFill(['status' => PluginApp::STATUS_ERROR, 'last_error' => $e->getMessage()])->save();
                 $report[$row->slug] = $e->getMessage();
             }
         }
@@ -215,7 +220,7 @@ class PluginManager
         return $report;
     }
 
-    /** @return array<int, array{slug: string, name: string, version: string, status: string, last_error: ?string}> */
+    /** @return array<int, array{slug: string, name: string, version: string, installed_version: ?string, status: string, last_error: ?string}> */
     public function rowsWithStatus(): array
     {
         $this->sync();
@@ -230,6 +235,7 @@ class PluginManager
                     'slug' => $slug,
                     'name' => $manifest->name(),
                     'version' => $manifest->version(),
+                    'installed_version' => $row?->status === PluginApp::STATUS_ACTIVE ? $row->version : null,
                     'status' => $row?->status ?? PluginApp::STATUS_INACTIVE,
                     'last_error' => $row?->last_error,
                 ];

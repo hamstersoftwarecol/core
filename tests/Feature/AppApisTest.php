@@ -16,6 +16,8 @@ use AppCore\Core\PluginManager;
 use AppCore\Core\Support\ActiveAppsCache;
 use AppCore\Core\View\DashboardWidgets;
 use AppCore\Notes\Widgets\NotesCountWidget;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use Livewire\Livewire;
 
@@ -176,4 +178,52 @@ test('apps:verify marca error las apps activas que ya no cumplen y reconstruye c
     PluginApp::create(['slug' => 'ghost', 'name' => 'G', 'version' => '1', 'status' => 'active']);
     $this->artisan('apps:verify')->assertFailed();
     expect(PluginApp::where('slug', 'ghost')->value('status'))->toBe('error');
+});
+
+test('core:make-admin asigna super-admin a un usuario existente', function () {
+    $user = plainUser();
+
+    $this->artisan('core:make-admin', ['email' => $user->email])->assertSuccessful();
+    expect($user->fresh()->hasRole('super-admin'))->toBeTrue();
+
+    $this->artisan('core:make-admin', ['email' => 'nadie@example.com'])->assertFailed();
+});
+
+test('apps:verify aplica migraciones nuevas de una app actualizada y fija la version', function () {
+    // copia de notes en un apps_path temporal dentro de base_path (los --path son relativos)
+    $dir = base_path('storage/framework/testing/apps-upgrade');
+    File::deleteDirectory($dir);
+    File::copyDirectory(base_path('apps/notes'), $dir.'/notes');
+    config(['plugin-core.apps_path' => $dir]);
+
+    $manager = app(PluginManager::class);
+    $manager->activate('notes');
+    $activatedAt = PluginApp::where('slug', 'notes')->value('activated_at');
+
+    // "deploy": nueva versión con una migración extra
+    $manifest = json_decode(file_get_contents($dir.'/notes/app.json'), true);
+    $manifest['version'] = '2.0.0';
+    file_put_contents($dir.'/notes/app.json', json_encode($manifest));
+    file_put_contents($dir.'/notes/database/migrations/2026_10_14_000001_add_pinned_to_notes.php', <<<'PHP'
+        <?php
+        use Illuminate\Database\Migrations\Migration;
+        use Illuminate\Database\Schema\Blueprint;
+        use Illuminate\Support\Facades\Schema;
+        return new class extends Migration {
+            public function up(): void { Schema::table('notes', fn (Blueprint $t) => $t->boolean('pinned')->default(false)); }
+            public function down(): void { Schema::table('notes', fn (Blueprint $t) => $t->dropColumn('pinned')); }
+        };
+        PHP);
+
+    $row = collect($manager->rowsWithStatus())->firstWhere('slug', 'notes');
+    expect($row['version'])->toBe('2.0.0')->and($row['installed_version'])->toBe('1.1.0');
+
+    $this->artisan('apps:verify')->assertSuccessful();
+
+    expect(Schema::hasColumn('notes', 'pinned'))->toBeTrue()
+        ->and(PluginApp::where('slug', 'notes')->value('version'))->toBe('2.0.0')
+        ->and(PluginApp::where('slug', 'notes')->value('activated_at'))->toEqual($activatedAt);
+
+    $manager->uninstall('notes');
+    File::deleteDirectory($dir);
 });

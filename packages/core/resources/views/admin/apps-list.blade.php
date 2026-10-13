@@ -28,7 +28,12 @@
                             <div class="font-medium">{{ $app['name'] }}</div>
                             <div class="text-xs text-gray-500">{{ $app['slug'] }}</div>
                         </td>
-                        <td class="px-4 py-2">{{ $app['version'] }}</td>
+                        <td class="px-4 py-2">
+                            {{ $app['version'] }}
+                            @if ($app['installed_version'] && $app['installed_version'] !== $app['version'])
+                                <div class="text-xs text-amber-600">instalada {{ $app['installed_version'] }} — ejecuta <code>apps:verify</code></div>
+                            @endif
+                        </td>
                         <td class="px-4 py-2">
                             <span @class([
                                 'rounded-full px-2 py-0.5 text-xs font-medium',

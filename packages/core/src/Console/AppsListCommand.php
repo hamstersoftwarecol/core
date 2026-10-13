@@ -22,8 +22,8 @@ class AppsListCommand extends Command
         }
 
         $this->table(
-            ['Slug', 'Nombre', 'Versión', 'Estado', 'Error'],
-            array_map(fn (array $r) => [$r['slug'], $r['name'], $r['version'], $r['status'], $r['last_error'] ?? ''], $rows),
+            ['Slug', 'Nombre', 'Versión', 'Instalada', 'Estado', 'Error'],
+            array_map(fn (array $r) => [$r['slug'], $r['name'], $r['version'], $r['installed_version'] ?? '', $r['status'], $r['last_error'] ?? ''], $rows),
         );
 
         return self::SUCCESS;

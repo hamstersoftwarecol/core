@@ -96,3 +96,30 @@ o añadir claves de config, nunca borra `table`).
 - `./vendor/bin/pest` — suite completa.
 - `php artisan tinker` → `app(\AppCore\Core\PluginManager::class)->rowsWithStatus()`
   — listado con estado real.
+
+## Primera instalación
+
+```bash
+composer install && npm install && npm run build
+php artisan migrate --force
+php artisan db:seed --class=RolesSeeder --force
+# registra tu usuario en /register y luego:
+php artisan core:make-admin tu@email.com
+```
+
+## Deploy (cada vez)
+
+`bootstrap/cache/active-apps.php` **no está en git**: si el deploy parte de un
+checkout limpio, todas las apps quedan desactivadas hasta reconstruirlo.
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force      # tablas del core
+php artisan apps:verify          # migraciones nuevas de apps, permisos, tipos y cache
+php artisan optimize
+```
+
+`apps:verify` re-aplica la activación de cada app activa (idempotente): si una app
+subió de versión o trae migraciones nuevas, se ejecutan aquí. En `/admin/apps` y
+`apps:list` se ve la versión instalada frente a la del disco. Sale con código ≠ 0 si
+alguna app falla (queda en `error` sin tumbar el sitio) — úsalo para cortar el pipeline.

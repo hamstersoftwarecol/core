@@ -33,7 +33,7 @@ test('sync crea o actualiza filas sin tocar el estado', function () {
 
     $row = PluginApp::where('slug', 'sample')->first();
     expect($row->name)->toBe('Sample App')
-        ->and($row->version)->toBe('1.0.0')
+        ->and($row->version)->toBe('0.9.0') // versión instalada: solo activate/apps:verify la sube
         ->and($row->status)->toBe('active') // el estado existente se conserva
         ->and(PluginApp::where('slug', 'sample-broken')->exists())->toBeTrue();
 });

@@ -11,6 +11,7 @@ use AppCore\Core\Console\AppsActivateCommand;
 use AppCore\Core\Console\AppsDeactivateCommand;
 use AppCore\Core\Console\AppsListCommand;
 use AppCore\Core\Console\AppsVerifyCommand;
+use AppCore\Core\Console\MakeAdminCommand;
 use AppCore\Core\Http\Livewire\Admin\AppConfigPage;
 use AppCore\Core\Http\Livewire\Admin\AppsPage;
 use AppCore\Core\Http\Livewire\Admin\RolesPage;
@@ -80,6 +81,7 @@ class CoreServiceProvider extends ServiceProvider
                 AppsActivateCommand::class,
                 AppsDeactivateCommand::class,
                 AppsVerifyCommand::class,
+                MakeAdminCommand::class,
             ]);
 
             $this->publishes([
