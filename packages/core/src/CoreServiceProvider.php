@@ -30,6 +30,14 @@ class CoreServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'core');
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/admin.php');
+
+        if (class_exists(\Livewire\Livewire::class)) {
+            \Livewire\Livewire::component('admin.apps', \AppCore\Core\Http\Livewire\Admin\AppsPage::class);
+        }
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/plugin-core.php' => config_path('plugin-core.php'),

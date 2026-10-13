@@ -147,6 +147,29 @@ class PluginManager
         $this->cache->rebuild();
     }
 
+    /** @return array<int, array{slug: string, name: string, version: string, status: string, last_error: ?string}> */
+    public function rowsWithStatus(): array
+    {
+        $this->sync();
+
+        $rows = PluginApp::orderBy('slug')->get()->keyBy('slug');
+
+        return $this->discover()
+            ->map(function (Manifest $manifest, string $slug) use ($rows) {
+                $row = $rows->get($slug);
+
+                return [
+                    'slug' => $slug,
+                    'name' => $manifest->name(),
+                    'version' => $manifest->version(),
+                    'status' => $row?->status ?? PluginApp::STATUS_INACTIVE,
+                    'last_error' => $row?->last_error,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     private function assertRequirements(Manifest $manifest): void
     {
         if ($c = $manifest->phpConstraint()) {
