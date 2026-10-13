@@ -36,3 +36,7 @@ test('archivo ausente o corrupto devuelve estado vacio sin explotar', function (
 
     expect($cache->isActive('sample'))->toBeFalse();
 });
+
+test('los tests usan un archivo de cache propio, no el de desarrollo', function () {
+    expect(config('plugin-core.cache_file'))->toBe(base_path('bootstrap/cache/active-apps.testing.php'));
+});

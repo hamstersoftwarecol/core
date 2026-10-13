@@ -10,7 +10,8 @@ abstract class TestCase extends BaseTestCase
     {
         // El estado de apps activas vive en un archivo; borrarlo ANTES de que la app
         // arranque garantiza que cada test parte con todas las apps inactivas.
-        $cache = dirname(__DIR__).'/bootstrap/cache/active-apps.php';
+        // Es el archivo de TEST (phpunit.xml: PLUGINS_CACHE_FILE), nunca el de desarrollo.
+        $cache = dirname(__DIR__).'/'.($_SERVER['PLUGINS_CACHE_FILE'] ?? $_ENV['PLUGINS_CACHE_FILE'] ?? 'bootstrap/cache/active-apps.testing.php');
         if (is_file($cache)) {
             unlink($cache);
         }
