@@ -1390,6 +1390,7 @@ test('no activa si una app requerida no esta activa', function () {
 test('los requisitos fallidos no cambian el estado', function () {
     use_fixture_apps_path();
     $manager = app(PluginManager::class);
+    $manager->sync(); // la UI sincroniza el listado antes de activar
 
     try {
         $manager->activate('sample-req-app');
@@ -1436,7 +1437,7 @@ Añadir a `PluginManager`:
 use AppCore\Core\Exceptions\ActivationFailed;
 use Composer\Semver\Semver;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Permission;
+use Spatie\Permission\Models\Permission;
 
 public function activate(string $slug): void
 {

@@ -101,3 +101,30 @@ test('los requisitos fallidos no cambian el estado', function () {
     expect($row->status)->toBe(PluginApp::STATUS_INACTIVE)
         ->and(app(ActiveAppsCache::class)->isActive('sample-req-app'))->toBeFalse();
 });
+
+test('migracion rota deja la app en error, fuera del cache, con mensaje reintetable', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+
+    expect(fn () => $manager->activate('sample-broken'))
+        ->toThrow(ActivationFailed::class);
+
+    $row = PluginApp::where('slug', 'sample-broken')->first();
+    expect($row->status)->toBe(PluginApp::STATUS_ERROR)
+        ->and($row->last_error)->toContain('boom')
+        ->and(Schema::hasTable('broken_table'))->toBeFalse()
+        ->and(app(ActiveAppsCache::class)->isActive('sample-broken'))->toBeFalse();
+});
+
+test('reintentar la activacion es posible y vuelve a fallar limpiamente', function () {
+    use_fixture_apps_path();
+    $manager = app(PluginManager::class);
+
+    try {
+        $manager->activate('sample-broken');
+    } catch (ActivationFailed) {
+    }
+    expect(fn () => $manager->activate('sample-broken'))->toThrow(ActivationFailed::class);
+
+    expect(PluginApp::where('slug', 'sample-broken')->value('status'))->toBe(PluginApp::STATUS_ERROR);
+});
