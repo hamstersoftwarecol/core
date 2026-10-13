@@ -1,0 +1,9 @@
+{
+    "slug": "sample",
+    "name": "Sample App",
+    "version": "1.0.0",
+    "requires": { "php": ">=8.3", "laravel": "^12.0", "apps": [] },
+    "permissions": ["sample.access"],
+    "config": { "items_per_page": { "type": "number", "default": 15 } },
+    "migrations": "database/migrations"
+}

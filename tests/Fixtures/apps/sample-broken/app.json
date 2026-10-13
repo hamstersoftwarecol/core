@@ -1,0 +1,8 @@
+{
+    "slug": "sample-broken",
+    "name": "Sample Roto",
+    "version": "1.0.0",
+    "requires": { "php": ">=8.3", "laravel": "^12.0", "apps": [] },
+    "permissions": ["sample-broken.access"],
+    "migrations": "database/migrations"
+}

@@ -1,0 +1,7 @@
+{
+    "slug": "sample-req-laravel",
+    "name": "Requiere Laravel 99",
+    "version": "1.0.0",
+    "requires": { "php": ">=8.3", "laravel": "^99.0", "apps": [] },
+    "permissions": ["sample-req-laravel.access"]
+}

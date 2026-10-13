@@ -1,0 +1,7 @@
+{
+    "slug": "sample-req-app",
+    "name": "Requiere Sample",
+    "version": "1.0.0",
+    "requires": { "php": ">=8.3", "laravel": "^12.0", "apps": ["sample"] },
+    "permissions": ["sample-req-app.access"]
+}
